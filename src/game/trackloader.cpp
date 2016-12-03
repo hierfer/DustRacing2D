@@ -275,9 +275,6 @@ void TrackLoader::readTile(
     tile->setTileTypeEnum(tileTypeEnumFromString(id.c_str()));
     tile->setComputerHint(static_cast<TrackTileBase::ComputerHint>(computerHint));
 
-    // Associate with a surface object corresponging
-    // to the tile type.
-    // surface() throws if fails. Handled of higher level.
     tile->setSurface(&MCAssetManager::surfaceManager().surface(id));
 
     // Set preview surface, if found.

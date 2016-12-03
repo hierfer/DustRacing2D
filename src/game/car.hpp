@@ -110,7 +110,7 @@ public:
     virtual void collisionEvent(MCCollisionEvent & event) override;
 
     //! \reimp
-    virtual void onStepTime(MCFloat step) override;
+    virtual void onStepTime(int ms) override;
 
     //! \reimp
     virtual bool update() override;
@@ -184,7 +184,7 @@ private:
 
     void setProperties(Description & desc);
 
-    void wearOutTires(MCFloat step, MCFloat factor);
+    void wearOutTires(int step, MCFloat factor);
 
     Description              m_desc;
     MCForceGeneratorPtr      m_onTrackFriction;

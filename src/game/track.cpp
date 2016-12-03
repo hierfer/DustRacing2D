@@ -136,9 +136,6 @@ void Track::renderAsphalt(
 {
     const MapBase & rMap = m_pTrackData->map();
 
-    static const int w = TrackTile::TILE_W;
-    static const int h = TrackTile::TILE_H;
-
     MCFloat x1, y1; // Coordinates mapped to camera
 
     // Bind common geometry and textures for all asphalt tiles.
@@ -146,28 +143,29 @@ void Track::renderAsphalt(
     m_asphalt.bind();
 
     // Loop through the visible tile matrix and draw the tiles
-    int initX = i0 * w;
+    int initX = i0 * TrackTile::TILE_W;
     int x     = initX;
-    int y     = j0 * h;
+    int y     = j0 * TrackTile::TILE_H;
     for (MCUint j = j0; j <= j2; j++)
     {
         x = initX;
         for (MCUint i = i0; i <= i2; i++)
         {
-            TrackTile * pTile = static_cast<TrackTile *>(rMap.getTile(i, j).get());
-            if (pTile->hasAsphalt())
+            // Note!!: This assumes, that the size of the asphalt image is 256x256 pixels
+            TrackTile * tile = static_cast<TrackTile *>(rMap.getTile(i, j).get());
+            if (tile->hasAsphalt())
             {
                 x1 = x;
                 y1 = y;
                 camera->mapToCamera(x1, y1);
-                prog->setTransform(0, MCVector3dF(x1 + w / 2, y1 + h / 2, 0));
+                prog->setTransform(0, MCVector3dF(x1 + TrackTile::TILE_W / 2, y1 + TrackTile::TILE_H / 2, 0));
                 m_asphalt.render();
             }
 
-            x += w;
+            x += TrackTile::TILE_W;
         }
 
-        y += h;
+        y += TrackTile::TILE_H;
     }
 }
 
@@ -175,9 +173,6 @@ void Track::renderTiles(
     MCCamera * camera, MCGLShaderProgramPtr prog, MCUint i0, MCUint i2, MCUint j0, MCUint j2)
 {
     const MapBase & rMap = m_pTrackData->map();
-
-    static const int w = TrackTile::TILE_W;
-    static const int h = TrackTile::TILE_H;
 
     MCFloat x1, y1; // Coordinates mapped to camera
 
@@ -192,9 +187,9 @@ void Track::renderTiles(
     std::map<MCSurface *, std::vector<SortedTile> > sortedTiles;
 
     // Loop through the visible tile matrix and sort the tiles.
-    int initX = i0 * w;
+    int initX = i0 * TrackTile::TILE_W;
     int x     = initX;
-    int y     = j0 * h;
+    int y     = j0 * TrackTile::TILE_H;
     for (MCUint j = j0; j <= j2; j++)
     {
         x = initX;
@@ -214,10 +209,10 @@ void Track::renderTiles(
                 sortedTiles[surface].push_back(sortedTile);
             }
 
-            x += w;
+            x += TrackTile::TILE_W;
         }
 
-        y += h;
+        y += TrackTile::TILE_H;
     }
 
     // Render the tiles.
@@ -226,7 +221,7 @@ void Track::renderTiles(
     {
         MCSurface * surface = iter->first;
         surface->setShaderProgram(prog);
-        surface->bindMaterial();
+        surface->bind();
 
         for (unsigned int i = 0; i < iter->second.size(); i++)
         {
@@ -234,7 +229,8 @@ void Track::renderTiles(
             y1 = iter->second[i].y1;
 
             const TrackTile * tile = iter->second[i].tile;
-            prog->setTransform(tile->rotation(), MCVector3dF(x1 + w / 2, y1 + h / 2, 0));
+            prog->setTransform(tile->rotation(), MCVector3dF(x1 + TrackTile::TILE_W / 2, y1 + TrackTile::TILE_H / 2, 0));
+            prog->setScale(TrackTile::TILE_W / surface->width(), TrackTile::TILE_H / surface->height(), 1.0f);
             surface->render();
         }
 
