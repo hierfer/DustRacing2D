@@ -188,7 +188,6 @@ void Renderer::setResolution(QSize resolution)
     m_vRes = resolution.height();
 
     m_fbo.reset();
-    m_shadowFbo.reset();
 }
 
 float Renderer::fadeValue() const
@@ -211,35 +210,13 @@ void Renderer::render()
         m_fbo->setAttachment(QOpenGLFramebufferObject::Depth);
     }
 
-    if (!m_shadowFbo)
-    {
-        m_shadowFbo.reset(new QOpenGLFramebufferObject(m_hRes, m_vRes));
-        m_shadowFbo->setAttachment(QOpenGLFramebufferObject::Depth);
-    }
-
     static MCGLMaterialPtr dummyMaterial(new MCGLMaterial);
 
     m_fbo->bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_scene->renderTrack();
     m_scene->renderObjects();
-    m_fbo->release();
-
-    m_shadowFbo->bind();
-    glClear(GL_COLOR_BUFFER_BIT);
-    QOpenGLFramebufferObject::blitFramebuffer(m_shadowFbo.get(), m_fbo.get(), GL_DEPTH_BUFFER_BIT);
     m_scene->renderObjectShadows();
-    m_shadowFbo->release();
-
-    m_fbo->bind();
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    dummyMaterial->setTexture(m_shadowFbo->texture(), 0);
-    MCSurface ss("dummy1", dummyMaterial, 2.0f, 2.0f);
-    ss.setShaderProgram(program("fbo"));
-    ss.bind();
-    ss.render(nullptr, MCVector3dF(), 0);
-    glDisable(GL_BLEND);
     m_scene->renderCommonHUD();
     m_fbo->release();
 

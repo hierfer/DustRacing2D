@@ -164,8 +164,6 @@ private:
 
     std::unique_ptr<QOpenGLFramebufferObject> m_fbo;
 
-    std::unique_ptr<QOpenGLFramebufferObject> m_shadowFbo;
-
     MCGLScene & m_glScene;
 };
 
