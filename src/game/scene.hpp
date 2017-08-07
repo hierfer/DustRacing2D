@@ -19,6 +19,7 @@
 #include "ai.hpp"
 #include "car.hpp"
 #include "crashoverlay.hpp"
+#include "minimap.hpp"
 #include "race.hpp"
 #include "timingoverlay.hpp"
 
@@ -155,6 +156,7 @@ private:
     Intro               * m_intro;
     ParticleFactory     * m_particleFactory;
     FadeAnimation       * m_fadeAnimation;
+    MiniMap               m_minimap;
 
     typedef std::vector<CarPtr> CarVector;
     CarVector m_cars;

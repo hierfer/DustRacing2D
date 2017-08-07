@@ -454,6 +454,9 @@ void Scene::setActiveTrack(Track & activeTrack)
     initRace();
 
     setupAI(activeTrack);
+
+    const int minimapSize = m_width * 0.2f;
+    m_minimap.initialize(activeTrack.trackData().map(), minimapSize / 2 + 10, minimapSize + 10, minimapSize);
 }
 
 void Scene::setWorldDimensions()
@@ -752,6 +755,8 @@ void Scene::renderObjects()
             renderPlayerScene(m_camera[0]);
             m_timingOverlay[0].render();
             m_crashOverlay[0].render();
+
+            m_minimap.render();
         }
 
         break;
